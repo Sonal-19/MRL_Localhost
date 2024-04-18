@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Disclosure } from "@headlessui/react";
 import { MailIcon, LocationMarkerIcon, PhoneIcon } from "@heroicons/react/outline";
 import { MenuIcon, XIcon, ChevronDownIcon } from "@heroicons/react/outline";
@@ -15,11 +15,11 @@ export default function Navbar() {
   const dropdownRef = useRef(null);
 
   const navigation = [
-    { name: "Home", href: "/", current: activeNavLink === "Home" },
-    { name: "About Us", href: "/about", current: activeNavLink === "About Us" },
-    { name: "Services", href: "/testing", current: activeNavLink === "Services" },
-    { name: "News & Events", href: "/news-events", current: activeNavLink === "News & Events" },
-    { name: "Contact Us", href: "/contact", current: activeNavLink === "Contact Us" },
+    { name: "Home", to: "/", current: activeNavLink === "Home" },
+    { name: "About Us", to: "/about", current: activeNavLink === "About Us" },
+    { name: "Services", to: "/testing", current: activeNavLink === "Services" },
+    { name: "News & Events", to: "/news-events", current: activeNavLink === "News & Events" },
+    { name: "Contact Us", to: "/contact", current: activeNavLink === "Contact Us" },
   ];
 
   const testingFacilities = [
@@ -29,19 +29,36 @@ export default function Navbar() {
     { name: "Micro Vicker Hardness Tester", path: "/micro-vector-hardness-tester" },
     { name: "Tribometer", path: "/tribometer" },
     { name: "Cryo Mill", path: "/cryo-mill" },
-    { name: "Universal Milling Machine", path: "/universal-tensil-tester" },
+    { name: "Universal Milling Machine", path: "/universal-milling-machine"},
     { name: "Abrasive Cutting Machine", path: "/abrasive-cutting-machine" },
     { name: "Double Disc Polishing Machine", path: "/double-disc-polishing-machine" },
     { name: "Injection Molding Machine", path: "/injection-modeling-machine" },
     { name: "Melt Flow Tester", path: "/melt-flow-tester" },
     { name: "3d Printer", path: "/pinter" },
     { name: "Vapour Smoothening", path: "/vapour-smoothening" },
+    { name: "Universal Tensile Tester", path: "/universal-tensil-tester" },
+    { name: "Air Jet Erosion Tester", path: "/air-jet-erosion-tester" },
+    { name: "Metallurgical Sample Saw", path: "/metallurgical-sample-saw" },
+    { name: "Hot Air Oven", path: "/hot-air-oven" },
+    { name: "Tool Maker's Microscope", path: "/tool-maker-mcroscope" },
+    { name: "FLIR Infrared Thermometer", path: "/flir-thermometer" },
+    { name: "Vibratory Finishing Machine", path: "/vibratory-finishing-machine" },
+    { name: "Metallographic Hot Mounting Press", path: "/metallographic-hot-mounting-press" },
+    { name: "Metallurgical Sample Saw", path: "/metallurgical-sample-saw" },
+    { name: "Digital Micrometer", path: "/digital-micrometer" },
+    { name: "Digital Vernier Caliper", path: "/digital-vernier-caliper" },
+    { name: "Pedestal Grinder", path: "/pedestal-grinder" },
   ];
 
-  const handleNavLinkClick = (name) => {
+  const handleNavLinkClick = (name, to) => {
     setActiveNavLink(name);
     setIsMobileMenuOpen(false);
-    window.location.href = href;
+    setIsTestingFacilitiesOpen(false); // Close the dropdown after clicking
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+    setIsTestingFacilitiesOpen(false); // Close the dropdown when opening/closing mobile menu
   };
 
   const toggleTestingFacilities = () => {
@@ -88,23 +105,20 @@ export default function Navbar() {
             {/* Logo */}
             <div className="relative flex h-16 items-center justify-between">
               <div className="absolute inset-y-0 left-0 flex flex-1 items-center">
-                <a href="/" className="mr-2">
+                <Link to="/" className="mr-2">
                   <img className="h-14 w-auto lg:me-0 lg:h-12 lg:w-auto" src="/lg3.png" alt="Your Company" />
-                </a>
-                <a href="/" className="mr-2">
+                </Link>
+                <Link to="/" className="mr-2">
                   <img className="h-14 w-auto lg:me-4 lg:h-12 lg:w-auto" src="/mrl3.png" alt="Your Company" />
-                </a>
+                </Link>
               </div>
               {/* Navigation */}
               <div className="hidden sm:flex flex-grow justify-center font-medium text-black items-center space-x-3 lg:mt-2 lg:ml-2">
                 {navigation.map((item) => (
                   <Link
                     key={item.name}
-                    to={item.href}
-                    onClick={() => {
-                      handleNavLinkClick(item.name);
-                      closeDropdown(); // Close the dropdown after clicking
-                    }}
+                    to={item.to}
+                    onClick={() => handleNavLinkClick(item.name, item.to)}
                     className={classNames(
                       item.current ? "text-red-600 underline" : "text-black-600 hover:text-red-600 hover:underline",
                       "px-2 py-2 font-serif text-sm"
@@ -132,7 +146,7 @@ export default function Navbar() {
                             to={facility.path}
                             onClick={() => {
                               closeDropdown(); // Close the dropdown after clicking
-                              handleNavLinkClick(facility.name);
+                              handleNavLinkClick(facility.name, facility.path);
                             }}
                             className={classNames(
                               "block px-2 py-1 text-sm border-b border-gray-200 hover:bg-gray-100"
@@ -155,7 +169,7 @@ export default function Navbar() {
               {/* Mobile Menu Button */}
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-4 sm:pr-0">
                 <Disclosure.Button className="sm:hidden relative inline-flex items-center justify-center rounded-md p-2 text-indigo-600 hover:bg-indigo-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-600"
-                  onClick={()=> setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  onClick={toggleMobileMenu}
                 >
                   <span className="absolute -inset-0.5" />
                   <span className="sr-only">Open main menu</span>
@@ -169,17 +183,14 @@ export default function Navbar() {
             </div>
           </div>
           {/* Mobile Menu Content */}
-          <Disclosure.Panel className="sm:hidden">
+          {isMobileMenuOpen && (
             <div className="space-y-1 px-2 pb-3 pt-2">
               <div className="flex flex-col items-center w-full">
                 {navigation.map((item) => (
                   <Link
                     key={item.name}
-                    to={item.href}
-                    onClick={() => {
-                      handleNavLinkClick(item.name);
-                      closeDropdown(); // Close the dropdown after clicking
-                    }}
+                    to={item.to}
+                    onClick={() => handleNavLinkClick(item.name, item.to)}
                     className={classNames(
                       item.current ? "text-blue-500 underline" : "text-black-600 hover:text-indigo-400 hover:underline",
                       "block px-1 py-2 text-lg font-medium"
@@ -207,7 +218,7 @@ export default function Navbar() {
                             to={facility.path}
                             onClick={() => {
                               closeDropdown(); // Close the dropdown after clicking
-                              handleNavLinkClick(facility.name);
+                              handleNavLinkClick(facility.name, facility.path);
                             }}
                             className={classNames(
                               "block px-4 py-2 text-sm border-b border-gray-200 hover:bg-gray-100"
@@ -222,7 +233,7 @@ export default function Navbar() {
                 </div>
               </div>
             </div>
-          </Disclosure.Panel>
+          )}
         </>
       )}
     </Disclosure>
